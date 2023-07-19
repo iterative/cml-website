@@ -64,7 +64,7 @@
     "docsearch.js": "^2.6.3",
     "ease-component": "^1.0.0",
     "fs-extra": "^11.1.0",
-    "gatsby": "^5.4.2",
+    "gatsby": "^5.9.1",
     "gatsby-plugin-alias-imports": "^1.0.5",
     "gatsby-plugin-image": "^3.4.0",
     "gatsby-plugin-robots-txt": "^1.8.0",
