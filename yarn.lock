@@ -1795,7 +1795,7 @@
     unist-util-remove-position "^4.0.1"
     unist-util-visit "^4.1.0"
 
-"@dvcorg/websites-server@^0.1.1":
+"@dvcorg/websites-server@0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@dvcorg/websites-server/-/websites-server-0.1.1.tgz#14c9f915f389af6d0a0860dea64e5e01aa906b3a"
   integrity sha512-YRR7WzQlRtfWR9FUqPv1TPQfa13bglda9ww5UFeF8hLkE+hpxVtB/hpELpJ6cF0CPKytfc0WbWMOIi7nCeXjrg==
