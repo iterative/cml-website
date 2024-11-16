@@ -113,6 +113,8 @@ train-and-report:
 
 </tab>
 <tab title="Bitbucket">
+<toggle>
+<tab title="No GPU">
 
 ```yaml
 pipelines:
@@ -130,7 +132,6 @@ pipelines:
     - step:
         runs-on: [self.hosted, cml.runner]
         image: iterativeai/cml:0-dvc2-base1
-        # GPU not yet supported, see https://github.com/iterative/cml/issues/1015
         script:
           - pip install -r requirements.txt
           - python train.py # generate plot.png
@@ -140,6 +141,58 @@ pipelines:
           - cml comment create report.md
 ```
 
+</tab>
+<tab title="GPU">
+
+Bitbucket does not support GPUs natively
+([cml#1015](https://github.com/iterative/cml/issues/1015),
+[BCLOUD-21459](https://jira.atlassian.com/browse/BCLOUD-21459)). A work-around
+is to directly use
+[TPI](https://github.com/iterative/terraform-provider-iterative) (the library
+which CML `runner` uses internally). TPI includes a CLI-friendly helper called
+LEO (launch, execute, orchestrate), used below:
+
+```yaml
+image: iterativeai/cml:0-dvc2-base1
+pipelines:
+  default:
+    - step:
+        name: Launch Runner and Train
+        script:
+          # Create training script
+          - |
+            cat <<EOF > leo-script.sh
+            #!/bin/bash
+            apt-get update -q && apt-get install -yq python3.9
+            pip3 install -r requirements.txt
+            python train.py # generate plot.png
+            EOF
+          # Launch runner
+          - |
+            LEO_OPTIONS="--cloud=aws --region=us-west"
+            leo_id=$(leo create $LEO_OPTIONS \
+              --image=nvidia
+              --machine=p2.xlarge \
+              --disk-size=64 \
+              --workdir=. \
+              --output=. \
+              --environment AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+              --environment AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+              --script="$(cat ./leo-script.sh)"
+            )
+            # Wait for cloud training to finish
+            leo read $LEO_OPTIONS --follow "$leo_id"
+            sleep 45 # TODO: explain
+            # Download cloud training results & clean up cloud resources
+            leo delete $LEO_OPTIONS --workdir=. --output=. "$leo_id"
+          # Create CML report
+          - cat metrics.txt >> report.md
+          - echo '![](./plot.png "Confusion Matrix")' >> report.md
+          - cml comment create report.md
+```
+
+</tab>
+</toggle>
 </tab>
 </toggle>
 

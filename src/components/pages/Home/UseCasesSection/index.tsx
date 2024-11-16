@@ -664,54 +664,62 @@ const UseCasesSection: React.ForwardRefRenderFunction<HTMLElement> = () => (
                 )}
                 bitbucket={(
                   <Collapser>
-                    <Code filename="bitbucket-pipelines.yml" repo="https://github.com/iterative/cml/issues/1015">
-                      <Tooltip type="dependencies">
-                        <div><span># GPU support coming soon, see https://github.com/iterative/cml/issues/1015</span></div>
-                      </Tooltip>
+                    <Code filename="bitbucket-pipelines.yml" repo="https://bitbucket.org/iterative-ai/cml-cloud-case">
+                      <div><span># Use LEO instead of CML to force GPU support on Bitbucket</span></div>
+                      <div><span># (<a href="/doc/ref/runner#bitbucket">https://cml.dev/doc/ref/runner#bitbucket</a>)</span></div>
+                      <div><span>image: iterativeai/cml:0-dvc2-base1</span></div>
                       <div><span>pipelines:</span></div>
-                      <div><span>  default:</span></div>
-                      <div><span>  - step:</span></div>
-                      <div><span>      name: deploy-runner</span></div>
-                      <div><span>      image: iterativeai/cml:0-dvc2-base1</span></div>
-                      <div><span>      script:</span></div>
-                      <div><span>        - |</span></div>
-                      <Tooltip type="runner">
-                        <div><span>          cml runner \</span></div>
-                        <div><span>              --cloud=aws \</span></div>
-                        <div><span>              --cloud-region=us-west \</span></div>
-                        <div><span>              --cloud-type=m5.2xlarge \</span></div>
-                        <div><span>              --cloud-spot \</span></div>
-                        <div><span>              --labels=cml.runner</span></div>
+                      <div>  <span>default:</span></div>
+                      <div>    <span>- step:</span></div>
+                      <div>        <span>name: Launch Runner and Train</span></div>
+                      <div>        <span>script:</span></div>
+                      <div>          <span>- |</span></div>
+                      <div>            <span>cat &lt;&lt;EOF &gt; leo-script.sh</span></div>
+                      <div>            <span>#!/bin/bash</span></div>
+                      <div>            <span>apt-get update -q && apt-get install -yq python3.9</span></div>
+                      <Tooltip type="dvc">
+                      <div>            <span>dvc pull data</span></div>
                       </Tooltip>
-                      <div><span>  - step:</span></div>
-                      <div><span>      name: run</span></div>
-                      <Tooltip type="runner">
-                        <div><span>      runs-on: [self.hosted, cml.runner]</span></div>
-                      </Tooltip>
-                      <div><span>      image: iterativeai/cml:0-dvc2-base1</span></div>
-                      <div><span>      script:</span></div>
                       <Tooltip type="dependencies">
-                        <div><span>      - apt-get update -y</span></div>
-                        <div><span>      - apt install imagemagick -y</span></div>
-                        <div><span>      - pip install -r requirements.txt</span></div>
+                      <div>            <span>pip3 install -r requirements.txt</span></div>
+                      <div>            <span>dvc repro</span></div>
                       </Tooltip>
-                      <div><span>      - git fetch --prune</span></div>
-                      <div><span>      - dvc repro</span></div>
+                      <div>            <span>EOF</span></div>
+                      <Tooltip type="runner">
+                      <div>          <span>- |</span></div>
+                      <div>            <span>LEO_OPTIONS=&quot;--cloud=aws --region=us-west&quot;</span></div>
+                      <div>            <span>leo_id=$(leo create $LEO_OPTIONS \</span></div>
+                      <div>              <span>--image=&quot;nvidia&quot;</span></div>
+                      <div>              <span>--machine=&quot;p2.xlarge&quot; \</span></div>
+                      <div>              <span>--disk-size=64 \</span></div>
+                      <div>              <span>--workdir=&quot;.&quot; \</span></div>
+                      <div>              <span>--output=&quot;.&quot; \</span></div>
+                      <div>              <span>--environment AWS_ACCESS_KEY_ID=&quot;$AWS_ACCESS_KEY_ID&quot; \</span></div>
+                      <div>              <span>--environment AWS_SECRET_ACCESS_KEY=&quot;$AWS_SECRET_ACCESS_KEY&quot; \</span></div>
+                      <div>              <span>--script=&quot;$(cat ./leo-script.sh)&quot;</span></div>
+                      <div>            <span>)</span></div>
+                      <div>            <span>leo read $LEO_OPTIONS --follow &quot;$leo_id&quot;</span></div>
+                      <div>            <span>sleep 45 # TODO: explain</span></div>
+                      <div>            <span>leo delete $LEO_OPTIONS --workdir=&quot;.&quot; --output=&quot;.&quot; \</span></div>
+                      <div>              <span>&quot;$leo_id&quot;</span></div>
+                      </Tooltip>
                       <Tooltip type="reports">
-                        <div><span>      - echo &quot;# Style transfer&quot; &gt;&gt; report.md</span></div>
-                        <div><span>      - git show origin/master:final_owl.png &gt; master_owl.png</span></div>
-                        <div><span>      - convert +append final_owl.png master_owl.png out.png</span></div>
-                        <div><span>      - convert out.png -resize 75%  out_shrink.png</span></div>
-                        <div><span>      - echo &quot;### Workspace vs. Main&quot; &gt;&gt; report.md</span></div>
-                        <div><span>      - cml publish out_shrink.png --md --title &#x27;compare&#x27; &gt;&gt; report.md</span></div>
-                        <div><span>      - echo &quot;## Training metrics&quot; &gt;&gt; report.md</span></div>
-                        <div><span>      - dvc params diff master --show-md &gt;&gt; report.md</span></div>
-                        <div><span>      - echo &gt;&gt; report.md</span></div>
-                        <div><span>      - cml send-comment report.md</span></div>
+                      <div>          <span>- git show origin/main:image.png &gt; image-main.png</span></div>
+                      <div>          <span>- |</span></div>
+                      <div>            <span>cat &lt;&lt;EOF &gt; report.md</span></div>
+                      <div>            <span># Style transfer</span></div>
+                      <div>            <span>## Workspace vs. Main</span></div>
+                      <div>            <span>![](./image.png &quot;Workspace&quot;) ![](./image-main.png &quot;Main&quot;)</span></div>
+                      <div>            <span>## Training metrics</span></div>
+                      <div>            <span>$(dvc params diff main --show-md)</span></div>
+                      <div>            <span>## GPU info</span></div>
+                      <div>            <span>$(cat gpu_info.txt)</span></div>
+                      <div>            <span>EOF</span></div>
+                      <div>          <span>- cml comment create report.md</span></div>
                       </Tooltip>
                     </Code>
                     <ExampleBox title="CML Report">
-                      <a target="_blank" rel="noreferrer" href="https://github.com/iterative/cml/issues/1015">
+                      <a target="_blank" rel="noreferrer" href="https://bitbucket.org/iterative-ai/cml-cloud-case/pull-requests/1">
                         <Image src="/img/bitbucket/cloud-report.png" alt="Bitbucket Cloud report example" />
                       </a>
                     </ExampleBox>

@@ -83,6 +83,15 @@ Any [generic option](/doc/ref) in addition to:
   need to write your code to save intermediate results to take advantage of
   this).
 
+### Bitbucket
+
+- **GPU support**.
+
+  See
+  [the guide on self-hosted Bitbucket runners](/doc/self-hosted-runners?tab=Bitbucket-GPU)
+  to work around
+  [Bitbucket's lack of native GPU support](https://jira.atlassian.com/browse/BCLOUD-21459).
+
 ## Examples
 
 ### Using `--cloud-permission-set`
