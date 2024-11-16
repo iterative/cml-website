@@ -1,6 +1,5 @@
 import React from 'react'
 import { Flex, Box, Container, Button } from '@theme-ui/components'
-import InstallPopup from '../../../../components/molecules/InstallPopup'
 import SmartLink from '../../../../components/atoms/SmartLink'
 import SiteLogo from '../../../../components/molecules/SiteLogo'
 import Alert from './Alert'
@@ -137,7 +136,6 @@ const Header: React.FC<IHeaderProps> = ({ isMain }) => {
 
   const collapsed = opened
 
-  const installPopup = usePopup()
   const otherToolsPopup = usePopup()
 
   return (
@@ -187,29 +185,6 @@ const Header: React.FC<IHeaderProps> = ({ isMain }) => {
                   {label}
                 </SmartLink>
               ))}
-              <Box
-                ref={installPopup?.containerEl}
-                sx={{ position: ['static', 'relative'] }}
-                onMouseEnter={installPopup.open}
-                onMouseLeave={installPopup.close}
-              >
-                <Button
-                  onPointerUp={installPopup.toggle}
-                  onKeyUp={onSelectKey(installPopup.toggle)}
-                  variant="layout.Header.Nav.NavButton"
-                  sx={
-                    installPopup.isOpen
-                      ? { variant: 'layout.Header.Nav.NavButton.Active' }
-                      : {}
-                  }
-                >
-                  Install
-                </Button>
-                <InstallPopup
-                  onClose={installPopup.close}
-                  isOpen={installPopup.isOpen}
-                />
-              </Box>
               <Box
                 variant="layout.Header.Nav.OtherTools"
                 ref={otherToolsPopup.containerEl}

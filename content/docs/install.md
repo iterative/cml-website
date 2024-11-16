@@ -1,30 +1,22 @@
 # Installing CML as a Package
 
-CML comes pre-installed in our provided
-[Docker Images](/doc/self-hosted-runners#docker-images). Alternatively, GitHub
-users can also use the [`setup-cml` action](/doc/start/github#setup-action).
+<admon>
 
-However, in all other cases, CML can be installed directly as a Node.js package
-using the package manager `npm` ([see below](#installing-nodejs)):
+Installing CML directly in CI environment is not typically needed, as comes
+pre-installed in our provided [Docker Images]. Alternatively, GitHub users can
+use the [`setup-cml` action].
 
-```cli
-$ npm i -g @dvcorg/cml
-```
+[docker images]: /doc/self-hosted-runners#docker-images
+[`setup-cml` action]: /doc/start/github#setup-action
 
-You may also need to install additional dependencies to use
-[DVC plots](https://dvc.org/doc/command-reference/plots) and Vega-Lite:
+</admon>
 
-```cli
-$ sudo apt-get install -y \
-  libcairo2-dev libfontconfig-dev \
-  libgif-dev libjpeg-dev libpango1.0-dev librsvg2-dev
-$ npm install -g vega-cli vega-lite
-```
+CML can be installed directly as a [Node.js](https://nodejs.org) package using
+`npm`.
 
-## Installing Node.js
+<details>
 
-Instructions for installing [Node.js](https://nodejs.org) and its package
-manager `npm` can be found below.
+### Installing Node.js
 
 <toggle>
 <tab title="GitLab">
@@ -51,3 +43,20 @@ install a particular version, add the following step to your workflow:
 
 </tab>
 </toggle>
+
+</details>
+
+```cli
+$ npm i -g @dvcorg/cml
+```
+
+To use [DVC plots], you need to install these additional dependencies:
+
+```cli
+$ sudo apt-get install -y \
+  libcairo2-dev libfontconfig-dev \
+  libgif-dev libjpeg-dev libpango1.0-dev librsvg2-dev
+$ npm install -g vega-cli vega-lite
+```
+
+[dvc plots]: https://dvc.org/doc/command-reference/plots

@@ -34,6 +34,10 @@
     "slug": "self-hosted-runners"
   },
   {
+    "label": "Install as a Package",
+    "slug": "install"
+  },
+  {
     "label": "Command Reference",
     "slug": "ref",
     "source": "ref/index.md",
@@ -67,10 +71,6 @@
         "slug": "tensorboard"
       }
     ]
-  },
-  {
-    "label": "Install as a Package",
-    "slug": "install"
   },
   {
     "label": "Contributing",

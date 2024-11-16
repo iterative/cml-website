@@ -94,15 +94,6 @@ export const HamburgerMenu: React.FC<
             Doc
           </Link>
         </li>
-        <li className={styles.section}>
-          <Link
-            href="/doc/install"
-            className={styles.sectionHeading}
-            onClick={handleItemClick('install')}
-          >
-            Install
-          </Link>
-        </li>
 
         <li className={styles.section}>
           <div className={styles.sectionHeading}>Support</div>
